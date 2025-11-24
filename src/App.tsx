@@ -19,11 +19,20 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Main routes with navbar */}
+        
+        <Route
+          path="/home"
+          element={
+            <MainLayout>
+              <Home />
+            </MainLayout>
+          }
+        />
         <Route
           path="/"
           element={
             <MainLayout>
-              <Home />
+              <Login />
             </MainLayout>
           }
         />
