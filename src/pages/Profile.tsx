@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-import { Camera, Save, RefreshCw, Globe, Activity, Utensils } from "lucide-react";
+import { Camera, Save, RefreshCw, Globe, Activity, Utensils, MapPin } from "lucide-react";
 
 // --- Types ---
 type ProfileRow = {
@@ -49,6 +49,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [locating, setLocating] = useState(false); // State for geolocation loading
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
@@ -142,6 +143,54 @@ export default function Profile() {
       hemisphere: ["Australia", "New Zealand", "South Africa"].includes(newCountry) ? "Southern" : "Northern"
     }));
   };
+
+  // --- GEOLOCATION LOGIC ---
+  const handleLocateMe = () => {
+    if (!navigator.geolocation) {
+      setMessage({ text: "Geolocation is not supported by your browser", type: 'error' });
+      return;
+    }
+
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const { latitude, longitude } = position.coords;
+      
+      try {
+        // Use OpenStreetMap's Nominatim API for free reverse geocoding
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`);
+        const data = await response.json();
+        
+        if (data && data.address) {
+            const newCountry = data.address.country;
+            const newState = data.address.state || data.address.region || "";
+            const newCity = data.address.city || data.address.town || data.address.village || "";
+
+            // Update state
+            setProfile(prev => ({
+                ...prev,
+                country: newCountry,
+                region: newState,
+                city: newCity,
+                // Auto-detect hemisphere based on latitude
+                hemisphere: latitude < 0 ? "Southern" : "Northern"
+            }));
+            
+            setMessage({ text: "Location updated!", type: 'success' });
+        }
+      } catch (error) {
+        console.error("Geocoding error:", error);
+        setMessage({ text: "Could not determine location details", type: 'error' });
+      } finally {
+        setLocating(false);
+        setTimeout(() => setMessage(null), 3000);
+      }
+    }, (error) => {
+      console.error("Geolocation error:", error);
+      setMessage({ text: "Unable to retrieve your location", type: 'error' });
+      setLocating(false);
+    });
+  };
+
 
   const handleFile = async (ev: React.ChangeEvent<HTMLInputElement>) => {
     const file = ev.target.files?.[0];
@@ -262,6 +311,19 @@ export default function Profile() {
             
             {/* Location Section */}
             <Section title="Location & Time" icon={<Globe className="w-5 h-5 text-blue-500" />}>
+              
+              {/* LOCATE ME BUTTON */}
+              <div className="flex justify-end mb-2">
+                <button
+                    type="button"
+                    onClick={handleLocateMe}
+                    disabled={locating}
+                    className="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-800 font-bold uppercase tracking-wide transition disabled:opacity-50"
+                >
+                    <MapPin className="w-3 h-3" /> {locating ? "Locating..." : "Auto-detect Location"}
+                </button>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputGroup label="Country">
                   <select 
@@ -273,22 +335,39 @@ export default function Profile() {
                     {Object.keys(LOCATION_DATA).map(country => (
                       <option key={country} value={country}>{country}</option>
                     ))}
+                    {/* Allow manually typed countries if not in list (from geolocation) */}
+                    {profile.country && !Object.keys(LOCATION_DATA).includes(profile.country) && (
+                        <option key={profile.country} value={profile.country}>{profile.country}</option>
+                    )}
                   </select>
                 </InputGroup>
 
                 <InputGroup label="State / Region">
-                  <select 
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-100 outline-none transition appearance-none disabled:opacity-50"
-                    value={profile.region || ""}
-                    onChange={(e) => updateField("region", e.target.value)}
-                    disabled={!profile.country}
-                  >
-                    <option value="" disabled>Select State</option>
-                    {profile.country && LOCATION_DATA[profile.country]?.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
-                    {!profile.country && <option>Select Country First</option>}
-                  </select>
+                   {/* If Country is in our list, show dropdown. Else show text input. */}
+                   {profile.country && LOCATION_DATA[profile.country] ? (
+                      <select 
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-100 outline-none transition appearance-none disabled:opacity-50"
+                        value={profile.region || ""}
+                        onChange={(e) => updateField("region", e.target.value)}
+                        disabled={!profile.country}
+                      >
+                        <option value="" disabled>Select State</option>
+                        {LOCATION_DATA[profile.country]?.map(state => (
+                          <option key={state} value={state}>{state}</option>
+                        ))}
+                        {/* Allow manually typed state if detected */}
+                         {profile.region && !LOCATION_DATA[profile.country]?.includes(profile.region) && (
+                            <option key={profile.region} value={profile.region}>{profile.region}</option>
+                        )}
+                      </select>
+                   ) : (
+                      <input 
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        value={profile.region || ""}
+                        onChange={(e) => updateField("region", e.target.value)}
+                        placeholder="State/Province"
+                      />
+                   )}
                 </InputGroup>
 
                 <InputGroup label="City">
@@ -343,7 +422,7 @@ export default function Profile() {
                     label="Dietary Preferences" 
                     placeholder="Type e.g. Vegan, Keto and hit Enter..."
                     tags={profile.dietary_prefs || []}
-                    onRemove={(tag: string) => removeTag(tag, "dietary_prefs")}
+                    onRemove={(tag) => removeTag(tag, "dietary_prefs")}
                     onKeyDown={(e) => handleTagInput(e, "dietary_prefs")}
                     color="green"
                   />
@@ -354,7 +433,7 @@ export default function Profile() {
                     label="Allergies" 
                     placeholder="Type e.g. Peanuts, Gluten and hit Enter..."
                     tags={profile.allergies || []}
-                    onRemove={(tag: string) => removeTag(tag, "allergies")}
+                    onRemove={(tag) => removeTag(tag, "allergies")}
                     onKeyDown={(e) => handleTagInput(e, "allergies")}
                     color="red"
                   />
@@ -365,7 +444,7 @@ export default function Profile() {
                     label="Favorite Cuisines" 
                     placeholder="Type e.g. Italian, Thai and hit Enter..."
                     tags={profile.preferred_cuisines || []}
-                    onRemove={(tag: string) => removeTag(tag, "preferred_cuisines")}
+                    onRemove={(tag) => removeTag(tag, "preferred_cuisines")}
                     onKeyDown={(e) => handleTagInput(e, "preferred_cuisines")}
                     color="blue"
                   />
