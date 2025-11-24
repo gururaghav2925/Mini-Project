@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import MainLayout from './components/layout/MainLayout'
+
 import Signup from './pages/auth/Signup'
 import Login from './pages/auth/Login'
 import ForgotPassword from './pages/auth/ForgotPassword'
@@ -8,66 +9,78 @@ import Recipes from './pages/Recipes'
 import Assistant from './pages/Assistant'
 import Profile from './pages/Profile'
 import Pantry from './pages/Pantry'
+import AuthGuard from './components/AuthGuard' // You created this earlier!
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Auth routes without navbar */}
+        {/* --- Public Routes (No Navbar) --- */}
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Main routes with navbar */}
+        {/* --- Protected Routes (With Navbar) --- */}
+        {/* Wrap all private pages in AuthGuard to block unauthenticated users */}
         
-        <Route
-          path="/home"
-          element={
-            <MainLayout>
-              <Home />
-            </MainLayout>
-          }
-        />
         <Route
           path="/"
           element={
-            <MainLayout>
-              <Login />
-            </MainLayout>
+            <AuthGuard>
+              <MainLayout>
+                <Home />
+              </MainLayout>
+            </AuthGuard>
           }
         />
+
         <Route
           path="/recipes"
           element={
-            <MainLayout>
-              <Recipes />
-            </MainLayout>
+            <AuthGuard>
+              <MainLayout>
+                <Recipes />
+              </MainLayout>
+            </AuthGuard>
           }
         />
+
         <Route
           path="/assistant"
           element={
-            <MainLayout>
-              <Assistant />
-            </MainLayout>
+            <AuthGuard>
+              <MainLayout>
+                <Assistant />
+              </MainLayout>
+            </AuthGuard>
           }
         />
+
         <Route
           path="/profile"
           element={
-            <MainLayout>
-              <Profile />
-            </MainLayout>
+            <AuthGuard>
+              <MainLayout>
+                <Profile />
+              </MainLayout>
+            </AuthGuard>
           }
         />
+
         <Route
           path="/pantry"
           element={
-            <MainLayout>
-              <Pantry />
-            </MainLayout>
+            <AuthGuard>
+              <MainLayout>
+                <Pantry />
+              </MainLayout>
+            </AuthGuard>
           }
         />
+
+        {/* Fallback: Redirect unknown URLs to Home (which will redirect to Login if needed) */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+        
       </Routes>
     </Router>
   )
