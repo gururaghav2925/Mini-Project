@@ -7,7 +7,7 @@ type ProfileRow = {
   id?: string;
   full_name?: string;
   display_name?: string;
-  age?: number | null; // <--- ADDED AGE TYPE
+  age?: number | null;
   country?: string;
   region?: string;
   city?: string;
@@ -55,7 +55,7 @@ export default function Profile() {
   const [profile, setProfile] = useState<ProfileRow>({
     full_name: "",
     display_name: "",
-    age: null, // <--- INIT AGE
+    age: null,
     country: "",
     region: "",
     city: "",
@@ -97,8 +97,16 @@ export default function Profile() {
         setEmail(user.email || "");
 
         const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+        
         if (mounted && data) {
-          setProfile(prev => ({ ...prev, ...data }));
+            setProfile({
+              ...profile, // Keep defaults
+              ...data,    // Overwrite with DB data
+              // FORCE arrays to be arrays (fix null issue)
+              dietary_prefs: data.dietary_prefs || [],
+              allergies: data.allergies || [],
+              preferred_cuisines: data.preferred_cuisines || [],
+            });
         } else if (mounted) {
           setProfile(prev => ({ ...prev, id: user.id }));
         }
@@ -336,7 +344,7 @@ export default function Profile() {
                     placeholder="Type e.g. Vegan, Keto and hit Enter..."
                     tags={profile.dietary_prefs || []}
                     onRemove={(tag: string) => removeTag(tag, "dietary_prefs")}
-                    onKeyDown={(e: any) => handleTagInput(e, "dietary_prefs")}
+                    onKeyDown={(e) => handleTagInput(e, "dietary_prefs")}
                     color="green"
                   />
                 </div>
@@ -347,7 +355,7 @@ export default function Profile() {
                     placeholder="Type e.g. Peanuts, Gluten and hit Enter..."
                     tags={profile.allergies || []}
                     onRemove={(tag: string) => removeTag(tag, "allergies")}
-                    onKeyDown={(e: any) => handleTagInput(e, "allergies")}
+                    onKeyDown={(e) => handleTagInput(e, "allergies")}
                     color="red"
                   />
                 </div>
@@ -358,7 +366,7 @@ export default function Profile() {
                     placeholder="Type e.g. Italian, Thai and hit Enter..."
                     tags={profile.preferred_cuisines || []}
                     onRemove={(tag: string) => removeTag(tag, "preferred_cuisines")}
-                    onKeyDown={(e: any) => handleTagInput(e, "preferred_cuisines")}
+                    onKeyDown={(e) => handleTagInput(e, "preferred_cuisines")}
                     color="blue"
                   />
                 </div>
@@ -418,8 +426,20 @@ function InputGroup({ label, children }: { label: string, children: React.ReactN
   );
 }
 
-function TagInput({ label, placeholder, tags, onRemove, onKeyDown, color }: any) {
-  const colorStyles: any = {
+// --- FIXED TYPE DEFINITIONS ---
+type TagColor = "green" | "red" | "blue";
+
+interface TagInputProps {
+  label: string;
+  placeholder: string;
+  tags: string[];
+  onRemove: (tag: string) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  color: TagColor;
+}
+
+function TagInput({ label, placeholder, tags, onRemove, onKeyDown, color }: TagInputProps) {
+  const colorStyles: Record<TagColor, string> = {
     green: "bg-green-100 text-green-700 hover:bg-green-200",
     red: "bg-red-100 text-red-700 hover:bg-red-200",
     blue: "bg-blue-100 text-blue-700 hover:bg-blue-200",
