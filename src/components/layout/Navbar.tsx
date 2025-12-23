@@ -4,7 +4,6 @@ import {
   Home,
   BookOpen,
   MessageSquare,
-  User,
   LogOut,
   Menu,
   X,
