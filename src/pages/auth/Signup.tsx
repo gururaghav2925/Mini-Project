@@ -92,7 +92,7 @@ const Signup = () => {
   return (
     <AuthCard
       title="Create your account"
-      subtitle="Join Nourishly to start planning your meals"
+      subtitle="Join Fit-Fork to start planning your meals"
       footer={
         <p>
           Already have an account?{' '}

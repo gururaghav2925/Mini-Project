@@ -13,7 +13,7 @@ const AuthCard = ({ title, subtitle, children, footer }: AuthCardProps) => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Nourishly
+            Fit-Fork
           </h1>
           <h2 className="text-2xl font-semibold text-gray-800">{title}</h2>
           {subtitle && (

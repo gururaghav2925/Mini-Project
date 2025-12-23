@@ -77,7 +77,7 @@ const Navbar = () => {
     <>
       {/* --- MOBILE TOP BAR (Visible only on small screens) --- */}
       <div className="md:hidden bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50 px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="text-xl font-bold text-blue-600">Nourishly</Link>
+        <Link to="/" className="text-xl font-bold text-blue-600">Fit-Fork</Link>
         <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-gray-600">
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -116,7 +116,7 @@ const Navbar = () => {
       >
         {/* Logo Area (Desktop only - Top Left) */}
         <div className="hidden md:flex items-center h-24 px-6 border-b border-gray-100">
-          <Link to="/" className="text-3xl font-bold text-blue-600">Nourishly</Link>
+          <Link to="/" className="text-3xl font-bold text-blue-600">Fit-Fork</Link>
         </div>
 
         {/* Nav Links */}

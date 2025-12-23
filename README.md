@@ -1,4 +1,4 @@
-# Nourishly - Smart Meal Planner
+# Fit-Fork - Smart Meal Planner
 
 A full-stack web application for smart meal planning built with modern web technologies.
 
@@ -15,7 +15,7 @@ A full-stack web application for smart meal planning built with modern web techn
 ## Project Structure
 
 ```
-nourishly/
+Fit-Fork/
 ├── public/                    # Static assets
 ├── src/                       # Source code
 │   ├── components/            # Reusable components
