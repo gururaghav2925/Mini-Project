@@ -54,7 +54,7 @@ export default function Assistant() {
         const twoHours = 2 * 60 * 60 * 1000;
 
         if (age < twoHours) {
-          return JSON.parse(savedMsgs).map((m: any) => ({
+          return (JSON.parse(savedMsgs) as Message[]).map((m) => ({
             ...m,
             timestamp: new Date(m.timestamp)
           }));
@@ -210,7 +210,7 @@ export default function Assistant() {
       if (parts.length > 1) {
         cleanText = parts[0].trim();
         const rawList = parts[1].split("+++")[0];
-        detectedIngredients = rawList.split(",").map((s: string) => s.trim()).filter(s => s.length > 0);
+        detectedIngredients = rawList.split(",").map((s: string) => s.trim()).filter((s: string) => s.length > 0);
       }
 
       const aiMsg: Message = {
@@ -222,7 +222,7 @@ export default function Assistant() {
       };
       setMessages((prev) => [...prev, aiMsg]);
 
-    } catch (err: any) {
+    } catch (err) {
       const errorMsg: Message = {
         id: Date.now().toString(),
         role: "assistant",

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { 
-  Activity, Heart, Thermometer , Calendar, 
- AlertCircle, CheckCircle2, Plus, X 
+  Activity, Heart, Thermometer, Calendar, 
+   AlertCircle, CheckCircle2, Plus, X 
 } from "lucide-react";
 
 type MedicalRecord = {
@@ -43,7 +43,7 @@ export default function Health() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('medical_records')
           .select('*')
           .eq('user_id', user.id)
@@ -87,7 +87,7 @@ export default function Health() {
 
       if (error) throw error;
       setMessage({ text: "Health data updated successfully!", type: 'success' });
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setMessage({ text: "Failed to save data.", type: 'error' });
     } finally {
