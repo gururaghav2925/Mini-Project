@@ -6,32 +6,31 @@ Fit-Fork is an intelligent full-stack nutrition assistant that personalizes meal
 Powered by Google Gemini AI, Supabase, and client-side ML, Fit-Fork acts as your personal clinical nutritionist + smart kitchen assistant.
 
 🏗️ System Architecture
-````mermaid
-graph TD
-    subgraph Client ["Frontend (Netlify)"]
-        UI[React + Tailwind UI]
-        Auth[Auth Guard]
-        LocalML[Client-side ML (KNN)]
-        State[Local Cache]
-    end
-    subgraph Backend ["Supabase Backend"]
-        AuthService[Auth Service]
-        DB[(PostgreSQL Database)]
-        Storage[File Storage]
-        Edge[Edge Functions]
-    end
-    subgraph AI_Services ["AI Services"]
-        Gemini[Google Gemini API]
-    end
-    UI -->|Authenticate| AuthService
-    UI -->|Read / Write| DB
-    UI -->|Upload Files| Storage
-    UI-->|Request + Context| Edge
-    Edge -->|Secure AI Call| Gemini
-    Gemini -->|Response| Edge
-    Edge -->|Final Output| UI
-    LocalML -->|Health Suggestions| UI
-    LocalML -->|Sync Metrics| DB
+````pgsql
++-------------------------+
+|       FRONTEND          |
+|  React + TypeScript     |
+|  Netlify Deployment     |
++-----------+-------------+
+            |
+            v
++-------------------------+
+|       SUPABASE          |
+|  Auth | Database | RLS  |
+|  Storage | Realtime     |
++-----------+-------------+
+            |
+            v
++-------------------------+
+|   Edge Functions (Deno) |
+|  Secure Gemini Requests |
++-----------+-------------+
+            |
+            v
++-------------------------+
+|     Google Gemini AI    |
++-------------------------+
+
 
 ````
 
