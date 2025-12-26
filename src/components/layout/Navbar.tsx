@@ -14,7 +14,7 @@ import {
 import { useState, useEffect } from 'react'
 
 const DEFAULT_AVATAR = "https://via.placeholder.com/150?text=Avatar"
-const LOGO_URL = "/logo.png"
+const LOGO_URL = "/logo.jpg"
 
 const Navbar = () => {
   const location = useLocation()
@@ -81,14 +81,13 @@ const Navbar = () => {
   return (
     <>
       {/* --- MOBILE TOP BAR (Visible only on small screens) --- */}
-      <div className="md:hidden bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50 px-4 h-16 flex items-center justify-between">
+      <div className="md:hidden bg-[#0F1A30] shadow-sm border-b border-[#1e2a45] fixed top-0 left-0 right-0 z-50 px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           {/* Mobile Logo: Keep manageable size */}
-          
-          <span className="text-xl font-bold text-blue-600">Fit-Fork</span>
-          <img src={LOGO_URL} alt="Logo" className="w-18 h-18 object-contain" />
+          <img src={LOGO_URL} alt="Logo" className="w-10 h-10 object-contain brightness-0 invert" />
+          <span className="text-xl font-bold text-white">Fit-Fork</span>
         </Link>
-        <button onClick={toggleMobileMenu} className="p-2 text-gray-700">
+        <button onClick={toggleMobileMenu} className="p-2 text-white/90 hover:text-white">
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
@@ -102,7 +101,7 @@ const Navbar = () => {
           </div>
           
           <Link to="/profile" className="relative group cursor-pointer block">
-            <div className="w-[75px] h-[75px] rounded-full bg-gray-100 border-2 border-gray-200 overflow-hidden hover:ring-4 hover:ring-blue-100 transition-all shadow-md">
+            <div className="w-[75px] h-[75px] rounded-full bg-gray-100 border-2 border-gray-200 overflow-hidden hover:ring-4 hover:ring-[#0F1A30] transition-all shadow-md">
               <img 
                 src={avatarSrc} 
                 alt="Profile" 
@@ -114,12 +113,12 @@ const Navbar = () => {
       </div>
 
       {/* --- DESKTOP SIDEBAR (Left) --- */}
-      <nav className="hidden md:flex flex-col w-64 h-screen bg-white border-r border-gray-200 fixed left-0 top-0 z-40">
-        <div className="flex items-center h-24 px-6 border-b border-gray-100">
+      <nav className="hidden md:flex flex-col w-64 h-screen bg-[#0F1A30] border-r border-[#1e2a45] fixed left-0 top-0 z-40 text-white">
+        <div className="flex items-center h-24 px-6 border-b border-white/10">
           <Link to="/" className="flex items-center gap-3">
             {/* Desktop Logo: Increased size here */}
-            <img src={LOGO_URL} alt="Logo" className="w-16 h-16 object-contain" />
-            <span className="text-2xl font-bold text-blue-600 truncate">Fit-Fork</span>
+            <img src={LOGO_URL} alt="Logo" className="w-16 h-16 object-contain brightness-100 border-2 border-white rounded-full" />
+            { <span className="text-2xl font-bold text-white truncate">Fit-Fork</span>  }
           </Link>
         </div>
 
@@ -133,20 +132,20 @@ const Navbar = () => {
                 to={item.path}
                 className={`
                   flex items-center gap-3 px-3 py-3 rounded-lg transition-colors duration-200
-                  ${active ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'}
+                  ${active ? 'bg-white/10 text-white shadow-lg shadow-black/10' : 'text-indigo-100 hover:bg-white/5 hover:text-white'}
                 `}
               >
-                <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-white' : 'text-indigo-300 group-hover:text-white'}`} />
                 <span>{item.label}</span>
               </Link>
             )
           })}
         </div>
 
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-white/10">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-3 w-full rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
+            className="flex items-center gap-3 px-3 py-3 w-full rounded-lg text-indigo-200 hover:bg-white/5 hover:text-white transition-colors duration-200"
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
             <span>Logout</span>
@@ -156,8 +155,8 @@ const Navbar = () => {
 
       {/* --- MOBILE NAV (Overlay for Mobile Menu) --- */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-gray-50 pt-16">
-           <div className="px-4 pt-2 pb-3 space-y-1">
+        <div className="md:hidden fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm pt-16">
+           <div className="px-4 pt-2 pb-3 space-y-1 bg-white border-b border-gray-200 shadow-xl">
               {navItems.map((item) => {
                 const Icon = item.icon
                 const active = isActive(item.path)
@@ -166,14 +165,14 @@ const Navbar = () => {
                     key={item.path}
                     to={item.path}
                     onClick={closeMobileMenu}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${active ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700 hover:bg-gray-50'}`}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${active ? 'bg-[#0F1A30] text-white font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
                   >
                     <Icon className="w-5 h-5" />
                     <span>{item.label}</span>
                   </Link>
                 )
               })}
-              <button onClick={() => { closeMobileMenu(); handleLogout(); }} className="flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50">
+              <button onClick={() => { closeMobileMenu(); handleLogout(); }} className="flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-600">
                 <LogOut className="w-5 h-5" />
                 <span>Logout</span>
               </button>
