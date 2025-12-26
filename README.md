@@ -6,7 +6,7 @@ Fit-Fork is an intelligent full-stack nutrition assistant that personalizes meal
 Powered by Google Gemini AI, Supabase, and client-side ML, Fit-Fork acts as your personal clinical nutritionist + smart kitchen assistant.
 
 🏗️ System Architecture
-```mermaid
+````mermaid
 graph TD
     subgraph Client ["Frontend (Netlify)"]
         UI[React + Tailwind UI]
@@ -38,7 +38,7 @@ graph TD
     LocalML -->|Health Suggestions| UI
     LocalML -->|Sync Metrics| DB
 
-```
+````
 
 🚀 Key Features
 
