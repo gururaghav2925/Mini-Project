@@ -10,6 +10,7 @@ import Assistant from './pages/Assistant'
 import Profile from './pages/Profile'
 import Pantry from './pages/Pantry'
 import AuthGuard from './components/AuthGuard' // You created this earlier!
+import Health from './pages/Health'
 
 function App() {
   return (
@@ -77,6 +78,16 @@ function App() {
             </AuthGuard>
           }
         />
+        <Route
+  path="/health"
+  element={
+    <AuthGuard>
+      <MainLayout>
+        <Health />
+      </MainLayout>
+    </AuthGuard>
+  }
+/>
 
         {/* Fallback: Redirect unknown URLs to Home (which will redirect to Login if needed) */}
         <Route path="*" element={<Navigate to="/" replace />} />
