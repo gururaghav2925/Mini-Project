@@ -1,9 +1,11 @@
 import { useState, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import AuthCard from '../../components/auth/AuthCard'
 import InputField from '../../components/ui/InputField'
 import Button from '../../components/ui/Button'
+
+// Path to your uploaded logo (assuming it's in public folder or imported)
+const LOGO_URL = "/logo.jpg"
 
 // Google Icon Component
 const GoogleIcon = () => (
@@ -58,12 +60,12 @@ const Login = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin, // Redirects back to your site
+          redirectTo: window.location.origin,
         },
       })
       if (error) throw error
-    } catch (error: any) {
-      setErrors({ submit: error.message })
+    } catch (error) {
+      setErrors({ submit: error instanceof Error ? error.message : 'An unexpected error occurred' })
     }
   }
 
@@ -100,105 +102,148 @@ const Login = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
     }
   }
 
   return (
-    <AuthCard
-      title="Welcome back"
-      subtitle="Sign in to your account to continue"
-      footer={
-        <p>
-          Don't have an account?{' '}
-          <Link
-            to="/signup"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
-            Sign up
-          </Link>
-        </p>
-      }
-    >
-      <div className="space-y-5">
-        {/* --- GOOGLE BUTTON --- */}
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
-        >
-          <GoogleIcon />
-          Sign in with Google
-        </button>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with email</span>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {errors.submit && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-              {errors.submit}
-            </div>
-          )}
-
-          <InputField
-            label="Email"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            error={errors.email}
-            placeholder="you@example.com"
-            required
-            autoComplete="email"
-          />
-
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <Link
-                to="/forgot-password"
-                className="text-sm font-medium text-blue-600 hover:text-blue-500"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <InputField
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-              placeholder="••••••••"
-              required
-              autoComplete="current-password"
+    <div className="min-h-screen bg-white flex">
+      {/* --- LEFT SIDE: BRANDING & LOGO --- */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0F1A30] to-[#273557] text-white flex-col justify-center items-center p-12 relative overflow-hidden">
+        {/* Decorative Circles */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+        
+        <div className="relative z-10 text-center space-y-8">
+          <div className="w-48 h-48 bg-white/10 rounded-3xl flex items-center justify-center backdrop-blur-sm shadow-2xl mx-auto border border-white/20">
+            <img 
+              src={LOGO_URL} 
+              alt="Fit-Fork Logo" 
+              className="w-32 h-32 object-contain brightness-100 border-2 border-white rounded-full drop-shadow-lg" 
             />
           </div>
-
-          <Button
-            type="submit"
-            fullWidth
-            isLoading={isLoading}
-            className="mt-6"
-          >
-            Sign In
-          </Button>
-        </form>
+          
+          <div className="space-y-4">
+            <h1 className="text-5xl font-bold tracking-tight">Fit-Fork</h1>
+            <p className="text-xl text-indigo-200 font-light max-w-md mx-auto leading-relaxed">
+              Your intelligent companion for personalized nutrition and smart meal planning.
+            </p>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-8 text-sm text-indigo-300/60">
+          © 2025 Fit-Fork Inc.
+        </div>
       </div>
-    </AuthCard>
+
+      {/* --- RIGHT SIDE: LOGIN FORM --- */}
+      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 bg-gray-50">
+        <div className="mx-auto w-full max-w-sm lg:w-96">
+          
+          {/* Mobile Logo (visible only on small screens) */}
+          <div className="lg:hidden text-center mb-8">
+             <img src={LOGO_URL} alt="Fit-Fork" className="h-12 mx-auto mb-2" />
+             <h2 className="text-2xl font-bold text-gray-900">Fit-Fork</h2>
+          </div>
+
+          <div className="text-center lg:text-left mb-8">
+            <h2 className="text-3xl font-extrabold text-gray-900">Welcome Back</h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Please enter your details to sign in.
+            </p>
+          </div>
+
+          <div className="mt-8">
+            {/* Google Button */}
+            <div className="mb-6">
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+              >
+                <GoogleIcon />
+                Sign in with Google
+              </button>
+            </div>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-gray-50 text-gray-500">Or continue with email</span>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {errors.submit && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm flex items-center gap-2">
+                  <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  {errors.submit}
+                </div>
+              )}
+
+              <InputField
+                label="Email address"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={errors.email}
+                placeholder="you@example.com"
+                required
+                autoComplete="email"
+                // Adding specific class for styling if InputField supports className prop or style internally
+              />
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <InputField
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  error={errors.password}
+                  placeholder="••••••••"
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                fullWidth
+                isLoading={isLoading}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform active:scale-[0.98]"
+              >
+                Sign In
+              </Button>
+            </form>
+
+            <div className="mt-8 text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{' '}
+                <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
+                  Sign up for free
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

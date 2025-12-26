@@ -110,7 +110,7 @@ export default function Pantry() {
     <div className="min-h-screen bg-gray-50 pb-20">
       
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-10 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-10 text-white shadow-lg border border-green-200 rounded-2xl">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-3">
