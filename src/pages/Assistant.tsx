@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 import { useLocation } from "react-router-dom";
 import { 
   Send, Bot, User, Sparkles, ChefHat, RotateCcw, 
-  AlertTriangle, PlusCircle, CheckCircle2, History, X, Clock, Trash2, ShoppingBasket, CheckSquare, Square
+  AlertTriangle, PlusCircle, CheckCircle2, History, X, Clock, Trash2, ShoppingBasket,
 } from "lucide-react";
 
 type Message = {
