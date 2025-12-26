@@ -28,7 +28,7 @@ const RECIPE_DATABASE: Recipe[] = [
     {
       id: "ap-1",
       title: "Pulihora (Tamarind Rice)",
-      image: "https://images.unsplash.com/photo-1654630650993-4a15a0c3029f?auto=format&fit=crop&w=800",
+      image: "https://imgs.search.brave.com/fGXuigU2fEPl5b-TsvoEv3kRdZMUj86m60RN3x30Wug/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/aW5kaWFuaGVhbHRo/eXJlY2lwZXMuY29t/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDI0/LzA2L3B1bGlob3Jh/LndlYnA",
       usedIngredient: "Rice",
       missingCount: 2,
       time: "20 min",
@@ -41,7 +41,7 @@ const RECIPE_DATABASE: Recipe[] = [
     {
       id: "ka-1",
       title: "Bisi Bele Bath",
-      image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=800",
+      image: "https://imgs.search.brave.com/U4D5hmml2RmfuDbXAxYeIk_cyH5y4qm4FYgTRAM01N8/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/Y2hlZnNwZW5jaWwu/Y29tL3dwLWNvbnRl/bnQvdXBsb2Fkcy9C/aXNlLUJlbGUtQmhh/dGgtNjQweDY0MC5q/cGc",
       usedIngredient: "Toor Dal",
       missingCount: 3,
       time: "40 min",

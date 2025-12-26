@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { 
   Activity, Heart, Thermometer, Calendar, 
-   AlertCircle, CheckCircle2, Plus, X 
+   AlertCircle, CheckCircle2, Plus, X, Brain
 } from "lucide-react";
+import { NeuralNetwork, TrainingSample, TrainingOutput } from "../lib/MiniBrain"; // <--- Updated Import
 
 type MedicalRecord = {
   id?: string;
@@ -36,6 +37,10 @@ export default function Health() {
   const [newCondition, setNewCondition] = useState("");
   const [newMedication, setNewMedication] = useState("");
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  
+  // ML State
+  const [mlRecommendation, setMlRecommendation] = useState<string | null>(null);
+  const [isTraining, setIsTraining] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -55,15 +60,75 @@ export default function Health() {
             conditions: data.conditions || [],
             medications: data.medications || []
           });
+          // Run prediction once data is loaded
+          runMLPrediction(data.blood_sugar_level, data.blood_pressure_systolic);
         }
       } catch (error) {
-        // No record found is fine, we'll create one on save
+        // No record found is fine
       } finally {
         setLoading(false);
       }
     }
     loadData();
   }, []);
+
+  // --- CUSTOM ML MODEL IMPLEMENTATION ---
+  const runMLPrediction = async (sugar: number | null, bp: number | null) => {
+    if (!sugar || !bp) return;
+    
+    setIsTraining(true);
+
+    // 1. Initialize our Custom ML Model
+    const net = new NeuralNetwork();
+
+    // 2. Training Data (Normalized inputs: 0-1)
+    const trainingData: TrainingSample[] = [
+      // High Sugar -> Low Carb
+      { input: { sugar: 0.9, bp: 0.5 }, output: { low_carb: 1 } },
+      // High BP -> Low Sodium
+      { input: { sugar: 0.4, bp: 0.9 }, output: { low_sodium: 1 } },
+      // Both High -> Strict Diet
+      { input: { sugar: 0.9, bp: 0.9 }, output: { strict_diet: 1 } },
+      // Normal -> Balanced
+      { input: { sugar: 0.4, bp: 0.4 }, output: { balanced: 1 } },
+    ];
+
+    // 3. Train the model
+    net.train(trainingData);
+    
+    // 4. Run Prediction
+    // Normalize user input
+    const normSugar = Math.min(sugar / 200, 1);
+    const normBP = Math.min(bp / 180, 1);
+    
+    // Simulate slight processing delay for effect
+    setTimeout(() => {
+        const output: TrainingOutput = net.run({ sugar: normSugar, bp: normBP });
+        
+        // Find highest probability
+        let bestCategory = "";
+        let highestVal = 0;
+        
+        for (const [key, value] of Object.entries(output)) {
+          // Ensure value is treated as number
+          if ((value as number) > highestVal) {
+             highestVal = value as number;
+             bestCategory = key;
+          }
+        }
+        
+        // Map category to user-friendly text
+        const recommendations: Record<string, string> = {
+           low_carb: "Low Carb & High Fiber (Focus on leafy greens)",
+           low_sodium: "Low Sodium / DASH Diet (Limit salt)",
+           strict_diet: "Strict Medical Diet (Consult professional)",
+           balanced: "Balanced Diet (Maintain current habits)"
+        };
+    
+        setMlRecommendation(recommendations[bestCategory] || "Balanced Diet");
+        setIsTraining(false);
+    }, 800);
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,9 +151,15 @@ export default function Health() {
         .upsert(payload, { onConflict: 'user_id' });
 
       if (error) throw error;
-      setMessage({ text: "Health data updated successfully!", type: 'success' });
+      
+      // Re-run ML on save
+      runMLPrediction(record.blood_sugar_level, record.blood_pressure_systolic);
+      
+      setMessage({ text: "Health data updated & Model retrained!", type: 'success' });
     } catch (err) {
-      console.error(err);
+      // Type guard for error message
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      console.error(msg);
       setMessage({ text: "Failed to save data.", type: 'error' });
     } finally {
       setSaving(false);
@@ -133,6 +204,32 @@ export default function Health() {
           </div>
         )}
       </div>
+      
+      {/* --- ML Recommendation Card --- */}
+      {mlRecommendation && (
+        <div className="bg-gradient-to-r from-purple-500 to-indigo-600 p-6 rounded-2xl shadow-lg text-white flex items-center justify-between">
+           <div>
+              <div className="flex items-center gap-2 mb-1">
+                 <Brain className="w-5 h-5" />
+                 <span className="text-xs font-bold uppercase tracking-wider opacity-80">ML Model Recommendation</span>
+              </div>
+              <h3 className="text-xl font-bold">
+                 {isTraining ? "Retraining Model..." : mlRecommendation}
+              </h3>
+              <p className="text-sm opacity-90 mt-1">
+                 Based on your Blood Sugar & Pressure levels.
+              </p>
+           </div>
+           <div className="hidden md:block">
+              {/* Abstract Visual for ML */}
+              <div className="flex gap-1">
+                 {[1,2,3].map(i => (
+                    <div key={i} className="w-2 h-8 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: `${i * 0.1}s` }}></div>
+                 ))}
+              </div>
+           </div>
+        </div>
+      )}
 
       <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
