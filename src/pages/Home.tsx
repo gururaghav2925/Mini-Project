@@ -205,7 +205,7 @@ export default function Home() {
               </div>
 
               <Link to="/profile" className="block w-full py-2 text-center text-sm font-medium text-gray-500 hover:text-indigo-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                View Full Profile
+                View Full Profile:
               </Link>
 
             </div>
