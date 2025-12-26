@@ -14,27 +14,22 @@ graph TD
         LocalML[Client-side ML (KNN)]
         State[Local Cache]
     end
-
     subgraph Backend ["Supabase Backend"]
         AuthService[Auth Service]
         DB[(PostgreSQL Database)]
         Storage[File Storage]
         Edge[Edge Functions]
     end
-
     subgraph AI_Services ["AI Services"]
         Gemini[Google Gemini API]
     end
-
     UI -->|Authenticate| AuthService
     UI -->|Read / Write| DB
     UI -->|Upload Files| Storage
-    UI -->|Request + Context| Edge
-
+    UI-->|Request + Context| Edge
     Edge -->|Secure AI Call| Gemini
     Gemini -->|Response| Edge
     Edge -->|Final Output| UI
-
     LocalML -->|Health Suggestions| UI
     LocalML -->|Sync Metrics| DB
 
