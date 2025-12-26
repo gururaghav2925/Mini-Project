@@ -12,32 +12,32 @@ graph TD
         UI[React + Tailwind UI]
         Auth[Auth Guard]
         LocalML[Client-side ML (KNN)]
-        State[Local State / Cache]
+        State[Local Cache]
     end
 
     subgraph Backend ["Supabase Backend"]
-        AuthService[GoTrue Auth]
+        AuthService[Auth Service]
         DB[(PostgreSQL Database)]
         Storage[File Storage]
-        Edge[Edge Functions (Deno)]
+        Edge[Edge Functions]
     end
 
-    subgraph AI_Services ["External AI Services"]
-        Gemini[Google Gemini 2.5 / 1.5 Flash]
+    subgraph AI_Services ["AI Services"]
+        Gemini[Google Gemini API]
     end
 
-    UI -->|Auth Request| AuthService
-    UI -->|Read/Write Data| DB
-    UI -->|Upload Images| Storage
-    UI -->|Chat Prompt + Context| Edge
-    
-    Edge -->|Inject Pantry & Health Context| DB
-    Edge -->|Secure API Call| Gemini
-    Gemini -->|AI Response| Edge
-    Edge -->|Final Response| UI
+    UI -->|Authenticate| AuthService
+    UI -->|Read / Write| DB
+    UI -->|Upload Files| Storage
+    UI -->|Request + Context| Edge
 
-    LocalML -->|Health Recommendations| UI
+    Edge -->|Secure AI Call| Gemini
+    Gemini -->|Response| Edge
+    Edge -->|Final Output| UI
+
+    LocalML -->|Health Suggestions| UI
     LocalML -->|Sync Metrics| DB
+
 ```
 
 🚀 Key Features
