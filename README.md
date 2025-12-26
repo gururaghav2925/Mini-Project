@@ -71,18 +71,33 @@ Powered by Google Gemini AI, Supabase, and client-side ML, Fit-Fork acts as your
 ✔️ Secure AI Key handling
 ```
 🛠️ Tech Stack
-```
-Layer	Technology	Purpose
-Frontend	React (Vite)	High-speed SPA UI
-Language	TypeScript	Type safety
-Styling	Tailwind CSS	Fast UI development
-Icons	Lucide React	Clean icon system
-Database	Supabase (PostgreSQL)	Managed relational DB
-Auth	Supabase Auth	Secure authentication
-Backend Logic	Supabase Edge Functions (Deno)	Secure AI + API processing
-AI / LLM	Google Gemini API	Generative intelligence
-Client ML	Custom KNN Model	Health classification
-Deployment	Netlify	Global CDN hosting
+```diff
+FRONTEND
+- React (Vite)
+- TypeScript
+- Tailwind CSS
+- Lucide Icons
+- Netlify Hosting
+
+BACKEND
+- Supabase
+- Supabase Auth
+- PostgreSQL Database
+- Row Level Security
+- Realtime Sync
+- Storage Buckets
+
+SERVERLESS / LOGIC
+- Supabase Edge Functions (Deno)
+
+AI & ML
+- Google Gemini API
+- Client-side KNN ML
+
+SECURITY
+- OAuth + Email Auth
+- RLS Policies
+
 ```
 📦 Installation & Setup
 ```
